@@ -50,16 +50,6 @@ spec:
                 script {
                     commit = sh(returnStdout: true, script: 'git describe --always').trim()
                 }
-                script {
-                    version = readMavenPom().getVersion()
-                }
-            }
-        }
-        stage('Test') {
-            steps {
-                container('jdk') {
-                    sh "./mvnw test"
-                }
             }
         }
         stage('Build & Publish Develop') {

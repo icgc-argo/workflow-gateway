@@ -40,7 +40,7 @@ http {
         }
 
         location /api-docs {
-            proxy_pass          http://docs;
+            proxy_pass          http://docs/api-docs;
 
             proxy_set_header    HOST $host;
             proxy_set_header    X-Forwarded-Proto $scheme;

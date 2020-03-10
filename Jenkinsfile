@@ -36,7 +36,7 @@ spec:
             steps {
                 script {
                     commit = sh(returnStdout: true, script: 'git describe --tags').trim()
-					version = sh(returnStdout: true, script: 'head -1 VERSION').trim()
+                    version = sh(returnStdout: true, script: 'head -1 VERSION').trim()
                 }
             }
         }

@@ -35,7 +35,7 @@ spec:
         stage('Prepare') {
             steps {
                 script {
-                    commit = sh(returnStdout: true, script: 'git describe --tags').trim()
+                    commit = sh(returnStdout: true, script: 'git describe --always').trim()
                     version = sh(returnStdout: true, script: 'head -1 VERSION').trim()
                 }
             }
@@ -51,9 +51,9 @@ spec:
                     }
 
                     // DNS error if --network is default
-                    sh "docker build --network=host . -t icgcargo/workflow-gateway:edge -t icgcargo/workflow-gateway:${commit}"
+                    sh "docker build --network=host . -t icgcargo/workflow-gateway:edge -t icgcargo/workflow-gateway:${version}-${commit}"
 
-                    sh "docker push icgcargo/workflow-gateway:${commit}"
+                    sh "docker push icgcargo/workflow-gateway:${version}-${commit}"
                     sh "docker push icgcargo/workflow-gateway:edge"
                 }
             }

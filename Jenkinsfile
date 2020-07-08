@@ -64,8 +64,7 @@ spec:
 
         stage('deploy to rdpc-collab-dev') {
             when {
-// Change branch to develop after successful testing
-                branch "2020-07-08-add-jenkins-deploy-stage"
+                branch "develop"
             }
             steps {
                 build(job: "/provision/helm", parameters: [
@@ -101,5 +100,21 @@ spec:
                 }
             }
         }
+
+        stage('deploy to rdpc-collab-qa') {
+            when {
+                branch "master"
+            }
+            steps {
+                build(job: "/provision/helm", parameters: [
+                    [$class: 'StringParameterValue', name: 'AP_RDPC_ENV', value: 'qa' ],
+                    [$class: 'StringParameterValue', name: 'AP_CHART_NAME', value: 'workflow-gateway'],
+                    [$class: 'StringParameterValue', name: 'AP_RELEASE_NAME', value: 'gateway'],
+                    [$class: 'StringParameterValue', name: 'AP_HELM_CHART_VERSION', value: "${chartVersion}"],
+                    [$class: 'StringParameterValue', name: 'AP_ARGS_LINE', value: "--set-string image.tag=${version}" ]
+                ])
+            }
+        }
+
     }
 }

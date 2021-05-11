@@ -16,4 +16,4 @@ RUN addgroup -S -g $APP_GID $APP_USER \
 
 USER $APP_UID
 
-CMD envsubst '$PORT,$WF_MANAGEMENT_HOST,$WF_SEARCH_HOST,$WF_UI_HOST,$WF_DOCS_HOST' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'
+CMD envsubst '$PORT,$WF_API_HOST,$WF_UI_HOST' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'

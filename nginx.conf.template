@@ -50,10 +50,14 @@ http {
             rewrite             ^/api-docs/swagger-resources(/.*)?$ /swagger-resources$1 break;
             rewrite             ^/api-docs/(.*)?$ /swagger-ui/$1 break;
 
-
-            # sub_filter updates regex in springfox.js so html can load properly
-            sub_filter_types application/javascript;
+            # sub_fitlers written while workflow-api is on `springfox.version=3.0.0`
+            sub_filter_types application/javascript application/json;
+            
+            # updates regex in springfox.js so html can load properly
             sub_filter ')\/swagger-ui(' ')\/(';
+
+            # updates base path in api-def so requests route to /api
+            sub_filter '"/"' '"/api"';
 
             proxy_pass          http://wfapi/;
 
@@ -63,7 +67,7 @@ http {
             proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
         }
 
-        location /service-info {
+        location /api/service-info {
             proxy_pass          http://wfapi/service-info;
 
             proxy_set_header    HOST $host;
@@ -72,8 +76,8 @@ http {
             proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
         }
 
-        location /runs {
-            rewrite             ^/runs(/.*)? /runs$1 break;
+        location /api/runs {
+            rewrite             ^/api/runs(/.*)? /runs$1 break;
             proxy_pass          http://runs_$request_method;
 
             proxy_set_header    HOST $host;

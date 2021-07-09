@@ -46,7 +46,7 @@ spec:
                 }
             }
         }
-        stage('Build & Publish Develop') {
+        stage('Testing DIND changes') {
             when {
                 branch "jenkins-dind-fix"
             }

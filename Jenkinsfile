@@ -46,21 +46,6 @@ spec:
                 }
             }
         }
-        stage('Testing DIND changes') {
-            when {
-                branch "jenkins-dind-fix"
-            }
-            steps {
-                container('docker') {
-                    withCredentials([usernamePassword(credentialsId:'argoContainers', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        sh 'docker login ghcr.io -u $USERNAME -p $PASSWORD'
-                    }
-
-                    // DNS error if --network is default
-                    sh "docker build --network=host . -t ${dockerRepo}:edge -t ${dockerRepo}:${version}-${commit}"
-                }
-            }
-        }
 
         stage('Build & Publish Develop') {
             when {

@@ -57,7 +57,7 @@ http {
             sub_filter ')\/swagger-ui(' ')\/(';
 
             # updates base path in api-def so requests route to /api
-            sub_filter '"/"' '"/api"';
+            sub_filter '"/"' '"/api/v1"';
 
             proxy_pass          http://wfapi/;
 

@@ -4,27 +4,23 @@ events {
 
 http {
     upstream runs_GET {
-        server ${WF_SEARCH_HOST};
+        server ${WF_API_HOST};
     }
 
     upstream runs_POST {
-        server ${WF_MANAGEMENT_HOST};
+        server ${WF_API_HOST};
     }
 
     upstream runs_OPTIONS {
-        server ${WF_MANAGEMENT_HOST};
+        server ${WF_API_HOST};
     }
 
-    upstream search {
-        server ${WF_SEARCH_HOST};
+    upstream wfapi {
+        server ${WF_API_HOST};
     }
 
     upstream ui {
         server ${WF_UI_HOST};
-    }
-
-    upstream docs {
-        server ${WF_DOCS_HOST};
     }
 
     server {
@@ -40,7 +36,7 @@ http {
         }
 
         location /graphql {
-            proxy_pass          http://search/graphql;
+            proxy_pass          http://wfapi/graphql;
 
             proxy_set_header    HOST $host;
             proxy_set_header    X-Forwarded-Proto $scheme;
@@ -48,8 +44,22 @@ http {
             proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
         }
 
-        location /api-docs {
-            proxy_pass          http://docs/api-docs;
+        location /api-docs/ {
+            # rewrites are needed for the springfox swagger html to fetch its resources correctly
+            rewrite             ^/api-docs/v2/api-docs?$ /v2/api-docs break;
+            rewrite             ^/api-docs/swagger-resources(/.*)?$ /swagger-resources$1 break;
+            rewrite             ^/api-docs/(.*)?$ /swagger-ui/$1 break;
+
+            # sub_fitlers written while workflow-api is on `springfox.version=3.0.0`
+            sub_filter_types application/javascript application/json;
+            
+            # updates regex in springfox.js so html can load properly
+            sub_filter ')\/swagger-ui(' ')\/(';
+
+            # updates base path in api-def so requests route to /api
+            sub_filter '"/"' '"/api/v1"';
+
+            proxy_pass          http://wfapi/;
 
             proxy_set_header    HOST $host;
             proxy_set_header    X-Forwarded-Proto $scheme;
@@ -57,8 +67,8 @@ http {
             proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
         }
 
-        location /api/v1/service-info {
-            proxy_pass          http://search/service-info;
+        location /api/service-info {
+            proxy_pass          http://wfapi/service-info;
 
             proxy_set_header    HOST $host;
             proxy_set_header    X-Forwarded-Proto $scheme;
